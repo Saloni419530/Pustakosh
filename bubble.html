@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bubble Pop Game</title>
+    <style>
+        /* Soft pastel background */
+        body {
+            background-color: #ded9d4;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Heading design */
+        h1 {
+            color: #5e4c4c;
+            font-size: 38px;
+            margin-top: 20px;
+        }
+
+        /* Score and Timer styling */
+        #score, #timer {
+            font-size: 20px;
+            color: #5e4c4c;
+            background: #fbeee6;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        #score:hover, #timer:hover {
+            background-color: #fcdada;
+            transform: scale(1.1);
+        }
+
+        /* Game container box */
+        #gameContainer {
+            width: 400px;
+            height: 500px;
+            background: #fff;
+            border-radius: 20px;
+            margin: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Bubble design */
+        .bubble {
+            width: 45px;
+            height: 45px;
+            background: radial-gradient(circle, #c88bc9, #291335);
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        /* Hover effect for bubbles */
+        .bubble:hover {
+            transform: scale(1.2);
+            background: radial-gradient(circle, #ff9a8b, #f6c9c6);
+        }
+
+        /* Bubble pop effect */
+        @keyframes pop {
+            0% {
+                transform: scale(0.7);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* After game over text */
+        #gameContainer h2 {
+            color: #5e4c4c;
+            font-size: 26px;
+            margin-top: 40%;
+        }
+
+        #gameContainer p {
+            font-size: 18px;
+            color: #5e4c4c;
+        }
+
+        /* Button design */
+        #restartButton {
+            background-color: #ff9a8b;
+            color: #fff;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        #restartButton:hover {
+            background-color: #ff6f61;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Bubble Pop Game</h1>
+<div id="score">Score: 0</div>
+<div id="timer">Time: 30s</div>
+<div id="gameContainer"></div>
+
+<script>
+    let score = 0;
+    let timeLeft = 30;
+    let gameOver = false;
+
+    const scoreDisplay = document.getElementById('score');
+    const timerDisplay = document.getElementById('timer');
+    const gameContainer = document.getElementById('gameContainer');
+
+    // Function to create random bubbles
+    function createBubble() {
+        if (gameOver) return;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        
+        // Random position of bubble
+        const x = Math.random() * (gameContainer.clientWidth - 50);
+        const y = Math.random() * (gameContainer.clientHeight - 50);
+
+        bubble.style.left = x + 'px';
+        bubble.style.top = y + 'px';
+
+        // When the bubble is clicked, it should disappear & increase score
+        bubble.onclick = function () {
+            if (gameOver) return;
+            score++;
+            scoreDisplay.textContent = 'Score: ' + score;
+            bubble.remove();
+        }
+
+        gameContainer.appendChild(bubble);
+
+        // Remove bubble if not clicked in 3 seconds
+        setTimeout(() => {
+            bubble.remove();
+        }, 3000);
+    }
+
+    // Timer function
+    function startTimer() {
+        const timer = setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = 'Time: ' + timeLeft + 's';
+
+            if (timeLeft === 0) {
+                clearInterval(timer);
+                gameOver = true;
+                endGame();
+            }
+        }, 1000);
+    }
+
+    // Function to end the game
+    function endGame() {
+        gameContainer.innerHTML = `
+            <h2>Game Over!</h2>
+            <p>Your Score: ${score}</p>
+            <button id="restartButton" onclick="restartGame()">Play Again</button>
+        `;
+    }
+
+    // Restart game
+    function restartGame() {
+        score = 0;
+        timeLeft = 30;
+        gameOver = false;
+        gameContainer.innerHTML = '';
+        scoreDisplay.textContent = 'Score: 0';
+        timerDisplay.textContent = 'Time: 30s';
+        startGame();
+    }
+
+    // Start the game
+    function startGame() {
+        startTimer();
+        setInterval(createBubble, 800); // Create bubble every 800ms
+    }
+
+    // Automatically start the game
+    startGame();
+</script>
+
+</body>
+</html>
